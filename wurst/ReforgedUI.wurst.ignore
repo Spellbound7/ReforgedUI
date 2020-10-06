@@ -1,0 +1,154 @@
+package ReforgedUI
+
+constant MINIMAP_WIDTH = .12
+constant MINIMAP_HEIGHT = MINIMAP_WIDTH
+constant MINIMAP_BUTTON_WIDTH = .0125
+constant MINIMAP_BUTTON_HEIGHT = MINIMAP_BUTTON_WIDTH
+constant MINIMAP_SEPARATOR = .005
+
+constant PORTRAIT_WIDTH = .06
+constant PORTRAIT_HEIGHT = .06
+constant PORTRAIT_SEPARATOR = .005
+
+constant INFO_PANEL_WIDTH = .16
+constant INFO_PANEL_HEIGHT = .08
+constant INFO_PANEL_SEPARATOR = PORTRAIT_SEPARATOR
+
+constant ICON_WIDTH = .0325
+constant ICON_HEIGHT = ICON_WIDTH
+constant ICON_COL_GAP = .0025
+constant ICON_ROW_GAP = ICON_COL_GAP
+
+constant CC_WIDTH = ICON_WIDTH * 5 + ICON_COL_GAP * 4
+constant CC_HEIGHT = ICON_HEIGHT * 3 + ICON_ROW_GAP * 2
+constant CC_SEPARATOR = PORTRAIT_SEPARATOR
+
+constant ITEM_SLOT_WIDTH = ICON_WIDTH
+constant ITEM_SLOT_HEIGHT = ITEM_SLOT_WIDTH
+constant ITEM_SLOT_SEPARATOR = ICON_COL_GAP
+
+constant INVENTORY_WIDTH = ICON_WIDTH * 3 + ITEM_SLOT_SEPARATOR * 2
+constant INVENTORY_HEIGHT = ICON_HEIGHT * 2 + ITEM_SLOT_SEPARATOR
+constant INVENTORY_SEPARATOR = PORTRAIT_SEPARATOR
+
+constant TOOLTIP_WIDTH = CC_WIDTH + CC_SEPARATOR + INVENTORY_WIDTH + INVENTORY_SEPARATOR
+
+constant EDGE_OFFSET = .008
+
+constant UI_WIDTH = PORTRAIT_WIDTH + PORTRAIT_SEPARATOR + INFO_PANEL_WIDTH + CC_WIDTH + INVENTORY_WIDTH
+constant UI_HEIGHT = INFO_PANEL_HEIGHT
+
+init
+    let uu = createUnit(players[0], 'Otch', ZERO2, bj_UNIT_FACING.fromDeg())
+    ..setLevel(10, false)..addItemById('wild')..addItemById('hlst')..addItemById('wcyc')
+    SelectUnit(uu, true)
+        
+    // hide main UI ...
+    setOriginFramesVisible(false)
+    getFrame("ConsoleUIBackdrop", 0).hide()
+
+    enableUIAutoPosition(false)
+
+    // ... then bring every element back one by one, repositioning and rescaling as needed
+    vec2 startingPoint
+    vec2 pos
+
+
+
+    //*----*----* MINIMAP *----*----*//
+    
+    startingPoint = vec2(0., EDGE_OFFSET)
+    getOriginFrame(ORIGIN_FRAME_MINIMAP)..clearAllPoints()..setSize(MINIMAP_WIDTH, MINIMAP_HEIGHT)..setAbsPoint(FRAMEPOINT_BOTTOMLEFT, startingPoint)..show()
+
+    pos = startingPoint + vec2(MINIMAP_WIDTH + MINIMAP_SEPARATOR, 0.)
+    getOriginFrame(ORIGIN_FRAME_MINIMAP_BUTTON, 4)..clearAllPoints()..setSize(MINIMAP_BUTTON_WIDTH, MINIMAP_BUTTON_HEIGHT)..setAbsPoint(FRAMEPOINT_TOPLEFT, pos)..show()
+    
+    pos -= vec2(0., MINIMAP_BUTTON_WIDTH + MINIMAP_SEPARATOR)
+    getOriginFrame(ORIGIN_FRAME_MINIMAP_BUTTON, 3)..clearAllPoints()..setSize(MINIMAP_BUTTON_WIDTH, MINIMAP_BUTTON_HEIGHT)..setAbsPoint(FRAMEPOINT_TOPLEFT, pos)..show()
+
+    pos -= vec2(0., MINIMAP_BUTTON_WIDTH + MINIMAP_SEPARATOR)
+    getOriginFrame(ORIGIN_FRAME_MINIMAP_BUTTON, 2)..clearAllPoints()..setSize(MINIMAP_BUTTON_WIDTH, MINIMAP_BUTTON_HEIGHT)..setAbsPoint(FRAMEPOINT_TOPLEFT, pos)..show()
+
+    pos -= vec2(0., MINIMAP_BUTTON_WIDTH + MINIMAP_SEPARATOR)
+    getOriginFrame(ORIGIN_FRAME_MINIMAP_BUTTON, 1)..clearAllPoints()..setSize(MINIMAP_BUTTON_WIDTH, MINIMAP_BUTTON_HEIGHT)..setAbsPoint(FRAMEPOINT_TOPLEFT, pos)..show()
+
+    pos -= vec2(0., MINIMAP_BUTTON_WIDTH + MINIMAP_SEPARATOR)
+    getOriginFrame(ORIGIN_FRAME_MINIMAP_BUTTON, 0)..clearAllPoints()..setSize(MINIMAP_BUTTON_WIDTH, MINIMAP_BUTTON_HEIGHT)..setAbsPoint(FRAMEPOINT_TOPLEFT, pos)..show()
+
+
+
+    //*----*----* INVENTORY GRID *----*----*//
+
+    startingPoint = vec2(.8, EDGE_OFFSET)
+    pos = startingPoint
+
+    /* SLOTS 5 4 3 */
+    pos = "InventoryButton_5".itemGrid(pos)
+    pos = "InventoryButton_4".itemGrid(pos)
+    "InventoryButton_3".itemGrid(pos)
+
+    pos = startingPoint + vec2(0., ITEM_SLOT_HEIGHT + ITEM_SLOT_SEPARATOR)
+
+    /* SLOTS 2 1 0 */
+    pos = "InventoryButton_2".itemGrid(pos)
+    pos = "InventoryButton_1".itemGrid(pos)
+    "InventoryButton_0".itemGrid(pos)
+
+
+
+    //*----*----* COMMAND CARD *----*----*//
+
+    startingPoint -= vec2(INVENTORY_WIDTH + INVENTORY_SEPARATOR, 0.)
+    pos = startingPoint
+
+    /* V C F D S A */
+    pos = "CommandButton_11".ccIcon(pos)
+    pos = "CommandButton_10".ccIcon(pos)
+    pos = "CommandButton_7".ccIcon(pos)
+    pos = "CommandButton_6".ccIcon(pos)
+    pos = "CommandButton_5".ccIcon(pos)
+    "CommandButton_4".ccIcon(pos)
+
+    pos = startingPoint + vec2(0., ICON_HEIGHT + ICON_ROW_GAP)
+
+    /* X Z R E W Q */
+    pos = "CommandButton_9".ccIcon(pos)
+    pos = "CommandButton_8".ccIcon(pos)
+    pos = "CommandButton_3".ccIcon(pos)
+    pos = "CommandButton_2".ccIcon(pos)
+    pos = "CommandButton_1".ccIcon(pos)
+    "CommandButton_0".ccIcon(pos)
+
+    pos = startingPoint + vec2(0., CC_HEIGHT + CC_SEPARATOR)
+    getOriginFrame(ORIGIN_FRAME_UBERTOOLTIP)..clearAllPoints()..setWidth(TOOLTIP_WIDTH)..setAbsPoint(FRAMEPOINT_BOTTOMRIGHT, pos)
+
+
+
+    //*----*----* INFO PANEL *----*----*//
+
+    startingPoint -= vec2(CC_WIDTH + CC_SEPARATOR, 0.)
+    //getOriginFrame(ORIGIN_FRAME_TOOLTIP)..setSize(INFO_PANEL_WIDTH, INFO_PANEL_HEIGHT)..setAbsPoint(FRAMEPOINT_BOTTOMRIGHT, startingPoint)..show()
+
+    pos = startingPoint + vec2(0., INFO_PANEL_HEIGHT + INFO_PANEL_SEPARATOR)
+    getOriginFrame(ORIGIN_FRAME_UNIT_PANEL_BUFF_BAR)..clearAllPoints()..setAbsPoint(FRAMEPOINT_BOTTOMRIGHT, pos)..show()
+
+
+
+    //*----*----* PORTRAIT *----*----*//
+
+    //startingPoint = vec2(.4 - (UI_WIDTH *.5), EDGE_OFFSET)
+    //startingPoint += vec2(MINIMAP_WIDTH + MINIMAP_SEPARATOR + MINIMAP_BUTTON_WIDTH + MINIMAP_SEPARATOR, 0.)
+
+    startingPoint -= vec2(INFO_PANEL_WIDTH + INFO_PANEL_SEPARATOR, 0.)
+    getOriginFrame(ORIGIN_FRAME_PORTRAIT)..setSize(PORTRAIT_WIDTH, PORTRAIT_HEIGHT)..setAbsPoint(FRAMEPOINT_BOTTOMRIGHT, startingPoint)..show()
+
+
+
+function string.ccIcon(vec2 pos) returns vec2
+    getFrame(this, 0)..clearAllPoints()..setSize(ICON_WIDTH, ICON_HEIGHT)..setAbsPoint(FRAMEPOINT_BOTTOMRIGHT, pos)..show()
+    return pos - vec2(ICON_WIDTH + ICON_COL_GAP, 0.)
+
+function string.itemGrid(vec2 pos) returns vec2
+    getFrame(this, 0)..clearAllPoints()..setSize(ITEM_SLOT_WIDTH, ITEM_SLOT_HEIGHT)..setAbsPoint(FRAMEPOINT_BOTTOMRIGHT, pos)..show()
+    return pos - vec2(ITEM_SLOT_WIDTH + ITEM_SLOT_SEPARATOR, 0.)
+
